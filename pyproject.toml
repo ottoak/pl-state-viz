@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "pl-state-viz"
+version = "0.1.0"
+description = ""
+authors = ["alex otto <alex.otto@xanadu.ai>"]
+readme = "README.md"
+packages = [{include = "pl_state_viz"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pennylane = "^0.31.0"
+dash = "^2.11.1"
+dash-mantine-components = "^0.12.1"
+matplotlib = "^3.7.1"
+qutip = "^4.7.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
