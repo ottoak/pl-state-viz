@@ -2,8 +2,7 @@ from dash import Dash, html, Input, Output, callback
 import dash_mantine_components as dmc
 
 from circuit import circuit
-from utils import mpl_to_img_src, draw_circuit
-from viz import plot_blochs
+from viz import plot_blochs, mpl_to_img_src, draw_circuit
 
 figs = [mpl_to_img_src(f) for f in plot_blochs(circuit)]
 
