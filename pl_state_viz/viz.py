@@ -4,26 +4,28 @@ import numpy as np
 import pennylane as qml
 import qutip as qt
 
-I = np.eye(2, 2)
-X = np.array([[0, 1], [1, 0]])
-Y = np.array([[0, -1j], [1j, 0]])
-Z = np.array([[1, 0], [0, -1]])
+from pennylane.pauli import PauliWord
 
 
 def exp_val(state, obs):
     return np.real(np.trace(obs @ np.outer(state, state.conj())))
 
 
-def multi_bloch(state, n_qubits):
+def multi_bloch_coords(state, n_qubits):
     coords = []
 
     for i in range(n_qubits):
-        _X = ft.reduce(np.kron, [I] * i + [X] + [I] * (n_qubits - 1 - i))
-        _Y = ft.reduce(np.kron, [I] * i + [Y] + [I] * (n_qubits - 1 - i))
-        _Z = ft.reduce(np.kron, [I] * i + [Z] + [I] * (n_qubits - 1 - i))
+        paulis = [
+            PauliWord({n: "I" if n != i else pauli for n in range(n_qubits)})
+            for pauli in ["X", "Y", "Z"]
+        ]
 
-        coords += [[exp_val(state, _X), exp_val(state, _Y),
-                    exp_val(state, _Z)]]
+        coords += [
+            [
+                exp_val(state, pauli.to_mat(wire_order=range(n_qubits)))
+                for pauli in paulis
+            ]
+        ]
 
     return coords
 
@@ -33,7 +35,7 @@ def plot_blochs(circuit):
 
     snapshots = qml.snapshots(circuit)()
     for k in snapshots.keys():
-        vecs = multi_bloch(snapshots[k], 4)
+        vecs = multi_bloch_coords(snapshots[k], 4)
 
         fig, axs = plt.subplots(
             1,
@@ -53,17 +55,3 @@ def plot_blochs(circuit):
         figs += [fig]
 
     return figs
-
-
-def map_to_sphere(z):
-    if not z[0]:
-        return [0, 0, -1]
-
-    ux = np.real(z[1] / z[0])
-    uy = np.imag(z[1] / z[0])
-
-    Px = 2 * ux / (1 + ux**2 + uy**2)
-    Py = 2 * uy / (1 + ux**2 + uy**2)
-    Pz = (1 - ux**2 - uy**2) / (1 + ux**2 + uy**2)
-
-    return [Px, Py, Pz]
