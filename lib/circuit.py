@@ -25,3 +25,6 @@ def circuit():
     qml.ctrl(qml.T, 3)(wires=0)
 
     return qml.state()
+
+
+states = qml.snapshots(circuit)()

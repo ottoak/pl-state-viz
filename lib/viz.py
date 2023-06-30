@@ -8,10 +8,11 @@ import qutip as qt
 
 from circuit import circuit
 from io import BytesIO
+from matplotlib.figure import Figure
 from pennylane.pauli import PauliWord
 
 
-def mpl_to_img_src(fig):
+def mpl_to_img_src(fig: Figure) -> str:
     tmpfile = BytesIO()
     fig.savefig(tmpfile, format="png")
     encoded = base64.b64encode(tmpfile.getvalue()).decode("utf-8")
@@ -21,17 +22,17 @@ def mpl_to_img_src(fig):
     return graph
 
 
-def draw_circuit():
+def draw_circuit() -> str:
     fig, ax = qml.draw_mpl(circuit, style="default")()
 
     return mpl_to_img_src(fig)
 
 
-def exp_val(state, obs):
+def exp_val(state: np.ndarray, obs: np.ndarray) -> float:
     return np.real(np.trace(obs @ np.outer(state, state.conj())))
 
 
-def multi_bloch_coords(state, n_qubits):
+def multi_bloch_coords(state: np.ndarray, n_qubits: int) -> list[list[float]]:
     coords = []
 
     for i in range(n_qubits):
@@ -75,3 +76,24 @@ def plot_blochs(circuit):
         figs += [fig]
 
     return figs
+
+
+def plot_blochs_v2(state) -> list[list[str]]:
+    state_spheres = []
+    vecs = multi_bloch_coords(state, int(np.log2(len(state))))
+
+    for i, v in enumerate(vecs):
+        fig, ax = plt.subplots(
+            constrained_layout=True,
+            subplot_kw=dict(projection="3d"),
+        )
+        ax.set_title(f"q[{i}]")
+
+        b = qt.Bloch(fig=fig, axes=ax)
+        b.add_vectors(v)
+        b.render()
+
+        state_spheres += [mpl_to_img_src(fig)]
+        plt.close()
+
+    return state_spheres
