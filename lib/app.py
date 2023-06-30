@@ -6,7 +6,7 @@ from viz import plot_blochs, mpl_to_img_src, draw_circuit
 
 figs = [mpl_to_img_src(f) for f in plot_blochs(circuit)]
 
-with open("pl_state_viz/circuit.py") as f:
+with open("lib/circuit.py") as f:
     lines = f.readlines()
 
 app = Dash()

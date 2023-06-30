@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["alex otto <alex.otto@xanadu.ai>"]
 readme = "README.md"
-packages = [{include = "pl_state_viz"}]
+packages = [{include = "lib"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
